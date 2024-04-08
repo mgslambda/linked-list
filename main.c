@@ -17,6 +17,7 @@ int main() {
     ll_print_list(l);
     ll_add_head(l, 101);
     ll_print_list(l);
+    printf("%d is at position 1 in the list\n", ll_get(l, 1));
     ll_del_list(l);
     puts("DONE");
 }
