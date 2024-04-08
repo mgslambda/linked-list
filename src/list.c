@@ -24,17 +24,20 @@ size_t ll_is_empty(List *l) {
     return ll_size(l) == 0;
 }
 
-int ll_get_head(List *l) {
-    if (ll_is_empty(l)) {
+int ll_get(List *l, size_t index) {
+    if (ll_is_empty(l))
         _throw_error("Cannot get from an empty list");
-    }
-    return l->head->val;
+    if (index >= ll_size(l))
+        _throw_error("Index out of bounds");
+    Node *current = l->head;
+    for (size_t i = 0; i < index; i++)
+        current = current->next;
+    return current->val;
 }
 
 int ll_get_tail(List *l) {
-    if (ll_is_empty(l)) {
+    if (ll_is_empty(l))
         _throw_error("Cannot get from an empty list");
-    }
     return l->tail->val;
 }
 
