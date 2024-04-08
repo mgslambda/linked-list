@@ -41,18 +41,25 @@ int ll_get_tail(List *l) {
     return l->tail->val;
 }
 
-void ll_add_head(List *l, const int val) {
+void ll_insert(List *l, size_t index, const int val) {
     Node *n = malloc(sizeof *n);
-    if (n == NULL) {
+    if (n == NULL)
         _throw_error("Could not allocate memory for list node");
-    }
     n->val = val;
     if (ll_is_empty(l)) {
         n->next = NULL;
         l->head = l->tail = n;
-    } else {
+    } else if (index == 0) {
         n->next = l->head;
         l->head = n;
+    } else {
+        if (index >= ll_size(l))
+            _throw_error("Index out of bounds. Use ll_add_tail to add to end of the list");
+        Node *current = l->head;
+        for (size_t i = 0; i < index - 1; i++)
+            current = current->next;
+        n->next = current->next;
+        current->next = n;
     }
     l->size++;
 }
