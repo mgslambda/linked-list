@@ -16,15 +16,15 @@ List *ll_init() {
     return l;
 }
 
-size_t ll_size(List *l) {
+size_t ll_size(const List *l) {
     return l->size;
 }
 
-size_t ll_is_empty(List *l) {
+size_t ll_is_empty(const List *l) {
     return ll_size(l) == 0;
 }
 
-int ll_get(List *l, size_t index) {
+int ll_get(const List *l, const size_t index) {
     if (ll_is_empty(l))
         _throw_error("Cannot get from an empty list");
     if (index >= ll_size(l))
@@ -35,13 +35,13 @@ int ll_get(List *l, size_t index) {
     return current->val;
 }
 
-int ll_get_tail(List *l) {
+int ll_get_tail(const List *l) {
     if (ll_is_empty(l))
         _throw_error("Cannot get from an empty list");
     return l->tail->val;
 }
 
-void ll_insert(List *l, size_t index, const int val) {
+void ll_insert(List *l, const size_t index, const int val) {
     Node *n = malloc(sizeof *n);
     if (n == NULL)
         _throw_error("Could not allocate memory for list node");
@@ -54,7 +54,7 @@ void ll_insert(List *l, size_t index, const int val) {
         l->head = n;
     } else {
         if (index >= ll_size(l))
-            _throw_error("Index out of bounds. Use ll_add_tail to add to end of the list");
+            _throw_error("Index out of bounds. Use ll_insert_tail to add to end of the list");
         Node *current = l->head;
         for (size_t i = 0; i < index - 1; i++)
             current = current->next;
@@ -64,7 +64,7 @@ void ll_insert(List *l, size_t index, const int val) {
     l->size++;
 }
 
-void ll_add_tail(List *l, const int val) {
+void ll_insert_tail(List *l, const int val) {
     Node *n = malloc(sizeof *n);
     if (n == NULL) {
         _throw_error("Could not allocate memory for list node");
@@ -80,22 +80,31 @@ void ll_add_tail(List *l, const int val) {
     l->size++;
 }
 
-int ll_remove_head(List *l) {
-    if (ll_is_empty(l)) {
+int ll_remove(List *l, const size_t index) {
+    int ret_val;
+    if (ll_is_empty(l))
         _throw_error("Cannot remove from an empty list");
-    }
-    Node *old_head = l->head;
-    int ret_val = old_head->val;
-    l->head = l->head->next;
+    Node *current = l->head;
     if (ll_size(l) == 1) {
+        ret_val = l->head->val;
+        l->head = l->head->next;
         l->tail = l->head;
+        free(current);
+    } else {
+        for (size_t i = 0; i < index - 1; i++)
+            current = current->next;
+        Node *remove_node = current->next;
+        current->next = current->next->next;
+        ret_val = remove_node->val;
+        free(remove_node);
+        if (index == ll_size(l) - 1)
+            l->tail = current;
     }
-    free(old_head);
     l->size--;
     return ret_val;
 }
 
-void ll_print_list(List *l) {
+void ll_print_list(const List *l) {
     Node *current = l->head;
     while (current != NULL) {
         printf("%d->", current->val);
